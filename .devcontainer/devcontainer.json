@@ -1,0 +1,13 @@
+{
+  "name": "Tyk Debug Exercise",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Tyk Gateway" }
+  },
+  "// postCreate": "Pre-pull images and start the (broken) stack so it is warm and already crash-looping when the candidate opens it.",
+  "postCreateCommand": "docker compose pull && docker compose up -d"
+}

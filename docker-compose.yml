@@ -1,0 +1,51 @@
+# Initech's Tyk stack — as their engineer handed it to us.
+# It does not work. Your job is to make it healthy and prove traffic flows.
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tyk
+      POSTGRES_PASSWORD: tyk
+      POSTGRES_DB: tyk_analytics
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tyk"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # The upstream service the API proxies to. Bundled so the exercise works offline.
+  httpbin:
+    image: kennethreitz/httpbin
+    ports:
+      - "8888:80"
+
+  tyk-gateway:
+    image: tykio/tyk-gateway:v5.3.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./conf/tyk.conf:/opt/tyk-gateway/tyk.conf
+      - ./conf/apps:/opt/tyk-gateway/apps
+    depends_on:
+      - redis
+      - httpbin
+
+  tyk-pump:
+    image: tykio/tyk-pump-docker-pub:v1.11.0
+    volumes:
+      - ./conf/pump.conf:/opt/tyk-pump/pump.conf
+    depends_on:
+      - redis
+      - postgres

@@ -1,0 +1,21 @@
+{
+  "name": "Initech API",
+  "api_id": "initech",
+  "org_id": "default",
+  "use_keyless": true,
+  "version_data": {
+    "not_versioned": true,
+    "versions": {
+      "Default": {
+        "name": "Default",
+        "use_extended_paths": true
+      }
+    }
+  },
+  "proxy": {
+    "listen_path": "/initech/",
+    "target_url": "http://httpbin:80/",
+    "strip_listen_path": true,
+  },
+  "active": true
+}
