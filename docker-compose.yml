@@ -11,20 +11,6 @@ services:
       timeout: 3s
       retries: 10
 
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: tyk
-      POSTGRES_PASSWORD: tyk
-      POSTGRES_DB: tyk_analytics
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tyk"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
   # The upstream service the API proxies to. Bundled so the exercise works offline.
   httpbin:
     image: kennethreitz/httpbin
@@ -46,6 +32,6 @@ services:
     image: tykio/tyk-pump-docker-pub:v1.11.0
     volumes:
       - ./conf/pump.conf:/opt/tyk-pump/pump.conf
+      - ./output:/opt/tyk-pump/output
     depends_on:
       - redis
-      - postgres

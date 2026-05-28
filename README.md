@@ -20,9 +20,8 @@ A Docker Compose stack:
 | Service | Role |
 |---|---|
 | `tyk-gateway` | The API gateway (port `8080`) |
-| `tyk-pump` | Ships analytics from the gateway into the database |
+| `tyk-pump` | Ships analytics from the gateway out to its configured sinks (here: CSV files in `./output/`) |
 | `redis` | Gateway's data store |
-| `postgres` | Where analytics land (`tyk_analytics` db, user/pass `tyk`/`tyk`) |
 | `httpbin` | A dummy upstream the API proxies to |
 
 The gateway proxies `GET /initech/` → the `httpbin` upstream.
@@ -48,11 +47,10 @@ Config you can edit lives in `./conf/`.
    curl -i http://localhost:8080/initech/get
    # expect HTTP 200
    ```
-2. That request shows up in the analytics database:
+2. That request lands in the pump's CSV output:
    ```bash
-   docker compose exec postgres \
-     psql -U tyk -d tyk_analytics -c "SELECT count(*) FROM tyk_analytics;"
-   # expect a non-zero count (give the pump ~10s to flush)
+   ls output/                    # expect a CSV file (give the pump ~10s to flush)
+   cat output/*.csv              # expect a row for your request
    ```
 
 ## Ground rules

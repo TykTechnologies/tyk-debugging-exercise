@@ -1,1 +1,3 @@
 interviewer/
+output/*
+!output/.gitkeep
